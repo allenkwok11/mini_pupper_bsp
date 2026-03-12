@@ -6,9 +6,10 @@ import pickle
 # instantiate the device. On Ubuntu 24.04 / kernel 6.8 this may not happen
 # automatically until the DKMS at24 module is rebuilt for kernel 6.8.
 #
-# The device path varies by kernel version:
-#   - Ubuntu 22.04 (Jammy): typically 3-00500
-#   - Ubuntu 24.04 (Noble): typically 3-00501 (rmem0 claims 3-00500)
+# The device path varies by Ubuntu version:
+#   - Ubuntu 20.04 (Focal): typically 3-00500 (no rmem devices pre-registered)
+#   - Ubuntu 22.04 (Jammy): typically 3-00501 (rmem0 claims 3-00500)
+#   - Ubuntu 24.04 (Noble): typically 3-00502 (rmem0 and rmem1 claim 3-00500/501)
 
 
 def _detect_nvmem_path():
@@ -18,8 +19,9 @@ def _detect_nvmem_path():
     no hardware EEPROM device is found.
     """
     patterns = [
-        '/sys/bus/nvmem/devices/3-00501/nvmem',  # Noble default
-        '/sys/bus/nvmem/devices/3-00500/nvmem',  # Jammy fallback
+        '/sys/bus/nvmem/devices/3-00502/nvmem',  # Noble (24.04) - rmem0 and rmem1 exist
+        '/sys/bus/nvmem/devices/3-00501/nvmem',  # Jammy (22.04) - rmem0 exists
+        '/sys/bus/nvmem/devices/3-00500/nvmem',  # Focal (20.04) - no rmem devices
     ]
     for path in patterns:
         if os.path.exists(path):

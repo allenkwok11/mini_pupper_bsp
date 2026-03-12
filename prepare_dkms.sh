@@ -31,9 +31,12 @@ sudo apt-get install -y dkms
 cd $BASEDIR/EEPROM
 sudo mkdir -p /usr/src/at24-1.0
 sudo cp Makefile /usr/src/at24-1.0
-if [ "$UBUNTU_CODENAME" == "jammy" ]; then
+if [ "$UBUNTU_CODENAME" == "focal" ]; then
+    sudo cp ubuntu_20.04/* /usr/src/at24-1.0
+elif [ "$UBUNTU_CODENAME" == "jammy" ]; then
     sudo cp ubuntu_22.04/* /usr/src/at24-1.0
 else
+    # noble and future versions
     sudo cp ubuntu_24.04/* /usr/src/at24-1.0
 fi
 sudo cp dkms.conf /usr/src/at24-1.0/
@@ -45,9 +48,11 @@ sudo dkms install -m at24 -v 1.0
 cd $BASEDIR/PWMController
 sudo mkdir -p /usr/src/pwm_pca9685-1.0
 sudo cp Makefile /usr/src/pwm_pca9685-1.0
-if [ "$UBUNTU_CODENAME" == "jammy" ]; then
+if [ "$UBUNTU_CODENAME" == "focal" ] || [ "$UBUNTU_CODENAME" == "jammy" ]; then
+    # Ubuntu 20.04 and 22.04 use the default source
     sudo cp pwm_pca9685.c /usr/src/pwm_pca9685-1.0/
 else
+    # Ubuntu 24.04 (noble) and future versions
     sudo cp ubuntu_24.04/pwm_pca9685.c /usr/src/pwm_pca9685-1.0/
 fi
 sudo cp dkms.conf /usr/src/pwm_pca9685-1.0/

@@ -170,11 +170,16 @@ sudo sed -i "s|BASEDIR|$BASEDIR|" /etc/rc.local
 # sudo sed -i "s|BASEDIR|$BASEDIR|" /usr/bin/battery_monitor
 
 ### Patch path to nvram device node
-# On Ubuntu 24.04 Noble, rmem0 and rmem1 are already registered in the nvmem subsystem,
-# so the EEPROM provider created from I2C device 3-0050 becomes 3-00502.
+# Different Ubuntu versions have different nvmem device numbering:
+# - Ubuntu 20.04 (Focal): 3-00500 (no rmem devices pre-registered)
+# - Ubuntu 22.04 (Jammy): 3-00501 (rmem0 pre-registered)
+# - Ubuntu 24.04 (Noble): 3-00502 (rmem0 and rmem1 pre-registered)
 if [ "$UBUNTU_CODENAME" == "noble" ]; then
     sudo sed -i "s/3-00500/3-00502/" /usr/local/lib/python3.*/dist-packages/MangDang/mini_pupper/nvram.py
+elif [ "$UBUNTU_CODENAME" == "jammy" ]; then
+    sudo sed -i "s/3-00500/3-00501/" /usr/local/lib/python3.*/dist-packages/MangDang/mini_pupper/nvram.py
 fi
+# For focal (20.04), keep the default 3-00500
 
 ### Make pwm sysfs and nvmem work for non-root users
 ### reference: https://github.com/raspberrypi/linux/issues/1983
